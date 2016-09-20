@@ -2,8 +2,10 @@ $ cat .gitignore
 
 # Can ignore specific files
 .settings.xml
+docker-compose.yml
 
 .idea
+.vscode
 
 # Use wildcards as well
 *~

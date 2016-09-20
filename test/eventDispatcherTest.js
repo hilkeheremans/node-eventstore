@@ -92,6 +92,46 @@ describe('EventDispatcher', function () {
 
       });
 
+      it('should not crash when there are lots of pending events', function (done) {
+        
+        var eventsInStore = [];
+
+        for(var i = 0; i < 10000; i++){
+          eventsInStore.push({
+            payload: {
+              index: i
+            }
+          });
+        }
+
+        function getUndispatchedEvents (callback) {
+          callback(null, eventsInStore);
+        }
+        
+        var publishedEvents = [];
+        
+        function publisher (evt) {
+          publishedEvents.push(evt);
+          check();
+        }
+        
+        function check () {
+          if (publishedEvents.length === eventsInStore.length) {
+            done();
+          }
+        }
+
+        var eventDispatcher = new EventDispatcher(publisher, {
+                                    getUndispatchedEvents: getUndispatchedEvents,
+                                    setEventToDispatched: function (evt, callback) { callback(null); }});
+        expect(eventDispatcher.undispatchedEventsQueue.length).to.eql(0);
+        
+        eventDispatcher.start(function(err) {
+          expect(err).not.to.be.ok();
+        });
+
+      });
+
     });
 
     describe('and calling addUndispatchedEvents', function () {

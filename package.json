@@ -1,7 +1,7 @@
 {
   "author": "adrai",
   "name": "@tsjing/adrai-eventstore",
-  "version": "1.7.7",
+  "version": "1.8.1",
   "contributors": [
     {
       "name": "Adriano Raiano",
@@ -40,26 +40,27 @@
     "node": ">=0.8.0"
   },
   "dependencies": {
-    "async": "1.5.2",
+    "async": "2.0.1",
     "debug": "2.2.0",
     "dotty": "0.0.2",
     "jsondate": "0.0.1",
-    "lodash": "4.11.1",
+    "lodash": "4.15.0",
     "node-uuid": "1.4.7",
     "parent-require": "1.0.0",
     "tolerance": "1.0.0"
   },
   "devDependencies": {
-    "azure-storage": ">= 0.10.0",
-    "cradle": ">=0.6.7",
-    "elasticsearch": ">= 10.0.0",
-    "uuid": "^2.0.1",
+    "aws-sdk": ">=2.4.11",
+    "azure-storage": ">=0.10.0",
+    "cradle": ">=0.7.1",
+    "elasticsearch": ">=10.0.0",
+    "uuid": "^2.0.2",
     "eslint": ">=1.0.0",
-    "expect.js": ">= 0.1.2",
-    "mocha": ">= 1.0.1",
-    "mongodb": ">= 0.0.1",
-    "redis": ">= 0.10.1",
-    "tingodb": ">= 0.0.1"
+    "expect.js": ">=0.1.2",
+    "mocha": ">=1.0.1",
+    "mongodb": ">=0.0.1",
+    "redis": ">=0.10.1",
+    "tingodb": ">=0.0.1"
   },
   "scripts": {
     "test": "mocha"

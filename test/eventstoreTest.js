@@ -1,7 +1,8 @@
 var expect = require('expect.js'),
   eventstore = require('../'),
   InMemory = require('../lib/databases/inmemory'),
-  Base = require('../lib/base');
+  Base = require('../lib/base'),
+  crypto = require('crypto');
 
 describe('eventstore', function () {
 
@@ -800,13 +801,45 @@ describe('eventstore', function () {
 
     describe('with options containing a type property with the value of', function () {
 
-      var types = ['inmemory', 'mongodb', 'tingodb', 'elasticsearch', 'redis'/*, 'azuretable'*/];
+      var types = ['inmemory', 'tingodb', 'mongodb', 'elasticsearch', 'redis'/*, 'azuretable', 'dynamodb'*/];
+
+      var token = crypto.randomBytes(16).toString('hex');
 
       types.forEach(function (type) {
 
         describe('"' + type + '"', function () {
 
           var es = null;
+
+          var options = {};
+
+          before(function () {
+            if (type === "azuretable" || type === "dynamodb") {
+              options = {
+                  eventsTableName: 'events' + token,
+                  undispatchedEventsTableName: 'undispatchedevents' + token,
+                  snapshotsTableName: 'snapshots' + token
+              }
+            }
+
+            options.type = type;
+          });
+
+          after(function(done){
+            if(type === "dynamodb") {
+              // AWS has a limit on the number of DynamoDB tables for an account. Let's clean up when we're done
+              var Store = require('../lib/databases/' + type);
+              var store = new Store(options);
+              store.connect(function(err, s) {
+                if(err) return done(err);
+                s.removeTables(function(err, result) {
+                  done(err);
+                });
+              });
+            } else {
+              done(null);
+            }
+          });
 
           describe('calling init without callback', function () {
 
@@ -815,7 +848,7 @@ describe('eventstore', function () {
             });
 
             beforeEach(function () {
-              es = eventstore({ type: type });
+              es = eventstore(options);
             });
 
             it('it should emit connect', function (done) {
@@ -834,7 +867,7 @@ describe('eventstore', function () {
             });
 
             beforeEach(function () {
-              es = eventstore({ type: type });
+              es = eventstore(options);
             });
 
             it('it should callback successfully', function (done) {
@@ -853,7 +886,7 @@ describe('eventstore', function () {
             describe('calling disconnect on store', function () {
 
               beforeEach(function (done) {
-                es = eventstore({ type: type });
+                es = eventstore(options);
                 es.init(done);
               });
 
@@ -878,7 +911,7 @@ describe('eventstore', function () {
             describe('using the eventstore', function () {
 
               before(function (done) {
-                es = eventstore({ type: type });
+                es = eventstore(options);
                 es.init(function(err) {
                   es.store.clear(done);
                 });

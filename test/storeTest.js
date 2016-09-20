@@ -4,7 +4,7 @@ var expect = require('expect.js'),
   _ = require('lodash'),
   crypto = require('crypto');
 
-var types = ['inmemory', 'mongodb', 'tingodb'/*, 'redis', 'azuretable', 'elasticsearch'*/];
+var types = ['inmemory', 'tingodb', 'mongodb'/*, 'redis', 'azuretable', 'elasticsearch', 'dynamodb'*/];
 
 var token = crypto.randomBytes(16).toString('hex');
 
@@ -17,10 +17,18 @@ types.forEach(function (type) {
     var Store = require('../lib/databases/' + type);
     var store;
 
+    after(function(done) {
+      if(type === "dynamodb") {
+        store.removeTables(done);
+      } else {
+        done(null);
+      }
+    });
+
     describe('creating an instance', function () {
 
       before(function () {
-        if (type === "azuretable") {
+        if (type === "azuretable" || type === "dynamodb") {
           options = {
               eventsTableName: 'events' + token,
               undispatchedEventsTableName: 'undispatchedevents' + token,

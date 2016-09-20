@@ -7,7 +7,7 @@ The project goal is to provide an eventstore implementation for node.js:
 
 - load and store events via EventStream object
 - event dispatching to your publisher (optional)
-- supported Dbs (inmemory, mongodb, redis, tingodb, elasticsearch, azuretable)
+- supported Dbs (inmemory, mongodb, redis, tingodb, elasticsearch, azuretable, dynamodb)
 - snapshot support
 - query your events
 
@@ -54,6 +54,7 @@ example with mongodb:
       // authSource: 'authedicationDatabase',        // optional
       // username: 'technicalDbUser',                // optional
       // password: 'secret'                          // optional
+      // url: 'mongodb://user:pass@host:port/db?opts // optional
     });
 
 example with redis:
@@ -105,6 +106,29 @@ example with azuretable:
       timeout: 10000                              // optional
     });
 
+example with dynamodb:
+
+    var es = require('eventstore')({
+        type: 'dynamodb',
+        eventsTableName: 'events',                  // optional
+        snapshotsTableName: 'snapshots',            // optional
+        undispatchedEventsTableName: 'undispatched' // optional
+        EventsReadCapacityUnits: 1,                 // optional
+        EventsWriteCapacityUnits: 3,                // optional
+        SnapshotReadCapacityUnits: 1,               // optional
+        SnapshotWriteCapacityUnits: 3,              // optional
+        UndispatchedEventsReadCapacityUnits: 1,     // optional
+    });
+
+DynamoDB credentials are obtained by eventstore either from environment vars or credentials file. For setup see [AWS Javascript SDK](http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-configuring.html).
+
+DynamoDB provider supports [DynamoDB local](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html) for local development via the AWS SDK `endpoint` option. Just set the `$AWS_DYNAMODB_ENDPOINT` (or `%AWS_DYNAMODB_ENDPOINT%` in Windows) environment variable to point to your running instance of Dynamodb local like this:
+
+    $ export AWS_DYNAMODB_ENDPOINT=http://localhost:8000
+
+Or on Windows:
+
+    > set AWS_DYNAMODB_ENDPOINT=http://localhost:8000
 
 ## Built-in event publisher (optional)
 
@@ -501,6 +525,7 @@ Currently these databases are supported:
 3. redis ([redis](https://github.com/mranney/node_redis))
 4. tingodb ([tingodb](https://github.com/sergeyksv/tingodb))
 5. azuretable ([azure-storage](https://github.com/Azure/azure-storage-node))
+6. dynamodb ([aws-sdk](https://github.com/aws/aws-sdk-js))
 
 ## own db implementation
 You can use your own db implementation by extending this...
